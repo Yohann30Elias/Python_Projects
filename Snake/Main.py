@@ -12,8 +12,8 @@ blue = (50, 153, 213)
 green = (0, 255, 0)
 orange = (255, 211, 67)
 
-dis_width = 600
-dis_height = 400
+dis_width = 800
+dis_height = 600
 
 dis = pygame.display.set_mode((dis_width, dis_height))
 pygame.display.set_caption('Snake by Yohann')
@@ -34,11 +34,42 @@ def our_snake(snake_block, snake_list):
     for x in snake_list:
         pygame.draw.rect(dis, black, [x[0], x[1], snake_block, snake_block])
 
-def message(msg, color):
+def message(msg, color, y_displace=0):
     mesg = font_style.render(msg, True, color)
-    dis.blit(mesg, [dis_width / 6, dis_height / 3])
+    dis.blit(mesg, [dis_width / 6, dis_height / 3 + y_displace])
 
-def gameLoop():
+def gameIntro():
+    intro = True
+    selected_difficulty = None
+
+    while intro:
+        dis.fill(blue)
+        message("Welcome to Snake Game", green, y_displace=-10)
+        message("Select Difficulty to Start or Q to Quit", orange, y_displace=20)
+        message("1. Easy", white, y_displace=60)
+        message("2. Medium", white, y_displace=100)
+        message("3. Hard", white, y_displace=140)
+        pygame.display.update()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_q:
+                    pygame.quit()
+                    quit()
+                elif event.key == pygame.K_1:
+                    selected_difficulty = "easy"
+                elif event.key == pygame.K_2:
+                    selected_difficulty = "medium"
+                elif event.key == pygame.K_3:
+                    selected_difficulty = "hard"
+                
+                if selected_difficulty:
+                    gameLoop(selected_difficulty)
+
+def gameLoop(difficulty):
     game_over = False
     game_close = False
 
@@ -54,6 +85,14 @@ def gameLoop():
     foodx = round(random.randrange(0, dis_width - snake_block) / 10.0) * 10.0
     foody = round(random.randrange(0, dis_height - snake_block) / 10.0) * 10.0
 
+
+    if difficulty == "easy":
+        snake_speed = 10
+    elif difficulty == "medium":
+        snake_speed = 20
+    elif difficulty == "hard":
+        snake_speed = 40
+
     while not game_over:
 
         while game_close == True:
@@ -68,7 +107,7 @@ def gameLoop():
                         game_over = True
                         game_close = False
                     if event.key == pygame.K_a:
-                        gameLoop()
+                        gameLoop(difficulty)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -77,13 +116,13 @@ def gameLoop():
                 if event.key == pygame.K_a:
                     x1_change = -snake_block
                     y1_change = 0
-                elif event.key == pygame.K_RIGHT:
+                elif event.key == pygame.K_d:
                     x1_change = snake_block
                     y1_change = 0
-                elif event.key == pygame.K_UP:
+                elif event.key == pygame.K_w:
                     y1_change = -snake_block
                     x1_change = 0
-                elif event.key == pygame.K_DOWN:
+                elif event.key == pygame.K_s:
                     y1_change = snake_block
                     x1_change = 0
 
@@ -119,4 +158,5 @@ def gameLoop():
     pygame.quit()
     quit()
 
+gameIntro()
 gameLoop()
